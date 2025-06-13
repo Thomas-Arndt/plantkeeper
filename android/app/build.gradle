@@ -85,6 +85,13 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    // Add this block for FontAwesome
+    sourceSets {
+        main {
+            assets.srcDirs += ['../assets/fonts/']
+        }
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
