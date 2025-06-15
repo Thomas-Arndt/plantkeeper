@@ -95,38 +95,34 @@ const TabOne = () => {
     }
   };
 
-  // Render header component with title
-  const ListHeaderComponent = () => (
-    <View style={styles.headerContainer}>
-      <Text style={styles.header}>Care Cards</Text>
-      <Text style={styles.subheader}>Colorado Native Plants</Text>
-    </View>
-  );
-
   return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        ref={flatListRef}
-        data={listData}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        showsVerticalScrollIndicator={true}
-        contentContainerStyle={styles.listContent}
-        ListHeaderComponent={ListHeaderComponent}
-        snapToAlignment="start"
-        decelerationRate="fast"
-        snapToInterval={0} // Set to 0 for smooth scrolling or to a specific value for snapping
-        bounces={true}
-        onScrollToIndexFailed={(info) => {
-          console.warn('Scroll to index failed:', info);
-        }}
-      />
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>Your Name Here's Garden</Text>
+      </View>
+      <View style={styles.container}>
+        <FlatList
+          ref={flatListRef}
+          data={listData}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          showsVerticalScrollIndicator={true}
+          contentContainerStyle={styles.listContent}
+          snapToAlignment="start"
+          decelerationRate="fast"
+          snapToInterval={0} // Set to 0 for smooth scrolling or to a specific value for snapping
+          bounces={true}
+          onScrollToIndexFailed={(info) => {
+            console.warn('Scroll to index failed:', info);
+          }}
+        />
 
-      {/* Alphabet selector on the right side */}
-      <AlphabetSelector
-        onSelectLetter={scrollToLetter}
-        availableLetters={availableLetters}
-      />
+        {/* Alphabet selector on the right side */}
+        <AlphabetSelector
+          onSelectLetter={scrollToLetter}
+          availableLetters={availableLetters}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -136,6 +132,7 @@ export default TabOne;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'row',
     backgroundColor: '#f5f5f5',
   },
   headerContainer: {
@@ -146,7 +143,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   header: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#2e7d32',

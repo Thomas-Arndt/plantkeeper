@@ -42,10 +42,8 @@ const AlphabetSelector: React.FC<AlphabetSelectorProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    right: 10,
-    top: '50%',
-    transform: [{ translateY: -200 }],
+    alignSelf: 'center',  // Don't stretch
+    flexShrink: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 15,
     paddingVertical: 8,

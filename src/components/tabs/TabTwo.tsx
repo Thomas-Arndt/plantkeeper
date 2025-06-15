@@ -15,7 +15,9 @@ const TabTwo = () => {
             photo={true}
             video={false}
         />*/}
-        <FontAwesomeIcon icon={faCamera} size={24} color="grey" />
+        <View style={styles.wrapper}>
+          <FontAwesomeIcon icon={faCamera} size={96} color="lightgrey" />
+        </View>
       </SafeAreaView>
   )
 }
@@ -24,13 +26,15 @@ export default TabTwo;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  wrapper: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    height: 100,
     margin: 10,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: 'grey',
     borderRadius: 10,
-  },
+  }
 });

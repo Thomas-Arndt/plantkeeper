@@ -17,14 +17,14 @@ const TabThree = () => {
   const navigation = useNavigation();
   // Sample agenda items
   const [items, setItems] = useState({
-    '2025-06-13': [{ name: 'Meeting with client', time: '10:00 AM' }],
-    '2025-06-14': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }, { name: 'Project presentation', time: '17:00:00' }],
-    '2025-06-15': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
-    '2025-06-16': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
-    '2025-06-17': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
-    '2025-06-19': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
-    '2025-06-20': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
-    '2025-06-21': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
+    '2025-06-13': [{ name: 'Colorado Blue Columbine', time: '10:00 AM' }],
+    '2025-06-14': [{ name: 'Prairie Zinnia', time: '09:00:00' }, { name: 'Blanket Flower', time: '14:00:00' }, { name: 'Sulphur Flower', time: '17:00:00' }],
+    '2025-06-15': [{ name: 'Prairie Coneflower', time: '09:00:00' }, { name: 'Colorado Blue Columbine', time: '14:00:00' }],
+    '2025-06-16': [{ name: 'Pasque Flower', time: '09:00:00' }, { name: 'Sulphur Flower', time: '14:00:00' }],
+    '2025-06-17': [{ name: 'Colorado Blue Columbine', time: '09:00:00' }, { name: 'Blue Grama Grass', time: '14:00:00' }],
+    '2025-06-19': [{ name: 'Prairie Zinnia', time: '09:00:00' }, { name: 'Blanket Flower', time: '14:00:00' }],
+    '2025-06-20': [{ name: 'Prairie Coneflower', time: '09:00:00' }, { name: 'Colorado Blue Columbine', time: '14:00:00' }],
+    '2025-06-21': [{ name: 'Pasque Flower', time: '09:00:00' }, { name: 'Sulphur Flower', time: '14:00:00' }],
   });
 
   // Get dates with events for marking
@@ -92,12 +92,12 @@ const TabThree = () => {
             textSectionTitleColor: '#b6c1cd',
             selectedDayBackgroundColor: '#00adf5',
             selectedDayTextColor: '#ffffff',
-            todayTextColor: '#00adf5',
+            todayTextColor: '#2e7d32',
             dayTextColor: '#2d4150',
             textDisabledColor: '#d9e1e8',
             dotColor: '#00adf5',
             selectedDotColor: '#ffffff',
-            monthTextColor: 'blue',
+            monthTextColor: '#2e7d32',
             indicatorColor: 'blue',
             textDayFontWeight: '300',
             textMonthFontWeight: 'bold',
@@ -108,9 +108,9 @@ const TabThree = () => {
           }}
           renderArrow={(direction) =>
               direction === 'left' ? (
-                  <FontAwesomeIcon icon={faChevronLeft} size={16} />
+                  <FontAwesomeIcon icon={faChevronLeft} size={16} color={'#2e7d32'} />
               ) : (
-                  <FontAwesomeIcon icon={faChevronRight} size={16} />
+                  <FontAwesomeIcon icon={faChevronRight} size={16} color={'#2e7d32'} />
               )
           }
         />
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   section: {
     backgroundColor: '#f0f0f0',
-    color: '#2d4150',
+    color: '#2e7d32',
     textTransform: 'capitalize',
     fontSize: 14,
     padding: 10,
