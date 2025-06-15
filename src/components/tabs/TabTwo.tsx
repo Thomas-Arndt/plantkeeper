@@ -1,11 +1,21 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
+import {faCamera} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+//import { useCameraDevice, Camera } from 'react-native-vision-camera';
 
 const TabTwo = () => {
+  //const device = useCameraDevice('back');
   return (
       <View style={styles.container}>
-        <Text>Camera</Text>
+        {/*<Camera
+            style={StyleSheet.absoluteFill}
+            device={device}
+            isActive={true}
+            photo={true}
+            video={false}
+        />*/}
+        <FontAwesomeIcon icon={faCamera} size={24} color="grey" />
       </View>
   )
 }
