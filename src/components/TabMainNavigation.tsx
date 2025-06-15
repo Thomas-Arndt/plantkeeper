@@ -8,7 +8,7 @@ import {faCalendar, faCamera, faLayerGroup, faEye} from '@fortawesome/free-solid
 import TabOne from './tabs/TabOne.tsx';
 import TabTwo from './tabs/TabTwo.tsx';
 import TabThree from './tabs/TabThree.tsx';
-import {Alert, StyleSheet, View} from "react-native";
+import {Alert, StyleSheet, View} from 'react-native';
 
 const TabMainNavigation = () => {
   const Tab = createBottomTabNavigator();
@@ -69,12 +69,11 @@ const TabMainNavigation = () => {
                       return isFocused ? null : 'Identify';
                     }
 
-                    let label = options.tabBarLabel !== undefined
+                    return options.tabBarLabel !== undefined
                         ? options.tabBarLabel
                         : options.title !== undefined
                             ? options.title
                             : route.name;
-                    return label;
                   }}
               />
           )}

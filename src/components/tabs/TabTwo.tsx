@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import {View, StyleSheet, SafeAreaView} from 'react-native';
 import {faCamera} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 //import { useCameraDevice, Camera } from 'react-native-vision-camera';
@@ -7,7 +7,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 const TabTwo = () => {
   //const device = useCameraDevice('back');
   return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         {/*<Camera
             style={StyleSheet.absoluteFill}
             device={device}
@@ -16,7 +16,7 @@ const TabTwo = () => {
             video={false}
         />*/}
         <FontAwesomeIcon icon={faCamera} size={24} color="grey" />
-      </View>
+      </SafeAreaView>
   )
 }
 export default TabTwo;

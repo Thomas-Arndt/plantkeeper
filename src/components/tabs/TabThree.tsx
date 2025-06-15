@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView} from 'react-native';
 import {
   CalendarProvider,
   ExpandableCalendar,
@@ -7,21 +7,24 @@ import {
   CalendarUtils,
   LocaleConfig
 } from 'react-native-calendars';
+import {useNavigation} from "@react-navigation/native";
+import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
+import {faChevronLeft, faChevronRight} from "@fortawesome/free-solid-svg-icons";
 
 const TabThree = () => {
   const today = CalendarUtils.getCalendarDateString(new Date());
   const [currentDate, setCurrentDate] = useState(today);
-
+  const navigation = useNavigation();
   // Sample agenda items
   const [items, setItems] = useState({
     '2025-06-13': [{ name: 'Meeting with client', time: '10:00 AM' }],
-    '2025-06-14': [{ name: 'Team brainstorming session', time: '9:00 AM' }, { name: 'Project presentation', time: '2:00 PM' }, { name: 'Project presentation', time: '5:00 PM' }],
-    '2025-06-15': [{ name: 'Team brainstorming session', time: '9:00 AM' }, { name: 'Project presentation', time: '2:00 PM' }],
-    '2025-06-16': [{ name: 'Team brainstorming session', time: '9:00 AM' }, { name: 'Project presentation', time: '2:00 PM' }],
-    '2025-06-17': [{ name: 'Team brainstorming session', time: '9:00 AM' }, { name: 'Project presentation', time: '2:00 PM' }],
-    '2025-06-18': [{ name: 'Team brainstorming session', time: '9:00 AM' }, { name: 'Project presentation', time: '2:00 PM' }],
-    '2025-06-19': [{ name: 'Team brainstorming session', time: '9:00 AM' }, { name: 'Project presentation', time: '2:00 PM' }],
-    '2025-06-20': [{ name: 'Team brainstorming session', time: '9:00 AM' }, { name: 'Project presentation', time: '2:00 PM' }],
+    '2025-06-14': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }, { name: 'Project presentation', time: '17:00:00' }],
+    '2025-06-15': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
+    '2025-06-16': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
+    '2025-06-17': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
+    '2025-06-19': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
+    '2025-06-20': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
+    '2025-06-21': [{ name: 'Team brainstorming session', time: '09:00:00' }, { name: 'Project presentation', time: '14:00:00' }],
   });
 
   // Get dates with events for marking
@@ -38,9 +41,11 @@ const TabThree = () => {
   // Render agenda item
   const renderItem = useCallback(({ item }) => {
     return (
-      <TouchableOpacity style={styles.item}>
+      <TouchableOpacity style={styles.item}
+        onPress={() => Alert.alert('Item pressed', item.name + ' ' + item.time + ' ' + item.date)}
+      >
         <View style={styles.itemTimeContainer}>
-          <Text style={styles.itemTime}>{item.time}</Text>
+          <Text style={styles.itemTime}>{formatTime(item.time)}</Text>
         </View>
         <View style={styles.itemNameContainer}>
           <Text style={styles.itemName}>{item.name}</Text>
@@ -54,8 +59,25 @@ const TabThree = () => {
     setCurrentDate(date);
   }, []);
 
+  const formatTime = (timeString : string) => {
+    if (!timeString) return '';
+
+    const [hoursStr, minutesStr] = timeString.split(':');
+
+    const hours = parseInt(hoursStr, 10);
+    const minutes = parseInt(minutesStr, 10);
+
+    if (isNaN(hours) || isNaN(minutes)) return '';
+
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHour = hours % 12 || 12; // convert 0 to 12
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+
+    return `${formattedHour}:${formattedMinutes} ${ampm}`;
+  };
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <CalendarProvider
         date={currentDate}
         onDateChanged={onDateChanged}
@@ -75,7 +97,6 @@ const TabThree = () => {
             textDisabledColor: '#d9e1e8',
             dotColor: '#00adf5',
             selectedDotColor: '#ffffff',
-            arrowColor: 'orange',
             monthTextColor: 'blue',
             indicatorColor: 'blue',
             textDayFontWeight: '300',
@@ -85,17 +106,27 @@ const TabThree = () => {
             textMonthFontSize: 16,
             textDayHeaderFontSize: 16,
           }}
+          renderArrow={(direction) =>
+              direction === 'left' ? (
+                  <FontAwesomeIcon icon={faChevronLeft} size={16} />
+              ) : (
+                  <FontAwesomeIcon icon={faChevronRight} size={16} />
+              )
+          }
         />
         <AgendaList
           sections={Object.keys(items).map(date => ({
             title: date,
-            data: items[date]
+            data: items[date].map(item => ({
+              ...item,
+              date,
+            }))
           }))}
           renderItem={renderItem}
           sectionStyle={styles.section}
         />
       </CalendarProvider>
-    </View>
+    </SafeAreaView>
   );
 };
 
