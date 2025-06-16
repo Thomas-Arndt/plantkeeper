@@ -17,12 +17,15 @@ const TabMainNavigation = () => {
       <Tab.Navigator
           screenOptions={{
             headerShown: false,
+            tabBarStyle: {
+              backgroundColor: 'transparent',
+              elevation: 0,
+            },
           }}
           tabBar={({ navigation, state, descriptors, insets }) => (
               <BottomNavigation.Bar
                   navigationState={state}
                   safeAreaInsets={insets}
-                  style={{display: 'flex'}}
                   onTabPress={({ route, preventDefault }) => {
                     const isFocused = state.index === state.routes.findIndex(r => r.key === route.key);
 
