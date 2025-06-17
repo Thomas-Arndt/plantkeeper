@@ -9,14 +9,19 @@ import {
 } from 'react-native-calendars';
 import {useNavigation, useFocusEffect} from "@react-navigation/native";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {faChevronLeft, faChevronRight} from "@fortawesome/free-solid-svg-icons";
+import {faChevronLeft, faChevronRight, faWater} from "@fortawesome/free-solid-svg-icons";
 import ExpandedCareCard from '../../components/ExpandedCareCard';
+import WateringOptionsModal from '../../components/WateringOptionsModal';
 
 const TabThree = () => {
   const today = CalendarUtils.getCalendarDateString(new Date());
   const [currentDate, setCurrentDate] = useState(today);
   const navigation = useNavigation();
   const [expandedPlant, setExpandedPlant] = useState(null);
+
+  // State for watering modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   // Close expanded care card when navigating away from this tab
   useFocusEffect(
@@ -222,6 +227,8 @@ const TabThree = () => {
 
   // Render agenda item
   const renderItem = useCallback(({ item }) => {
+    const showWaterIcon = isToday(item.date);
+
     return (
       <TouchableOpacity style={styles.item}
         onPress={() => {
@@ -231,20 +238,175 @@ const TabThree = () => {
           }
         }}
       >
-        <View style={styles.itemTimeContainer}>
+        {/*<View style={styles.itemTimeContainer}>
           <Text style={styles.itemTime}>{formatTime(item.time)}</Text>
-        </View>
+        </View>*/}
         <View style={styles.itemNameContainer}>
           <Text style={styles.itemName}>{item.name}</Text>
         </View>
+        {showWaterIcon && (
+          <TouchableOpacity
+            style={styles.waterIconContainer}
+            onPress={(e) => {
+              e.stopPropagation(); // Prevent triggering the parent TouchableOpacity
+              setSelectedItem(item);
+              setModalVisible(true);
+            }}
+          >
+            <FontAwesomeIcon icon={faWater} size={20} color="#2196F3" />
+          </TouchableOpacity>
+        )}
       </TouchableOpacity>
     );
-  }, [findPlantByName]);
+  }, [findPlantByName, isToday, today]);
 
   // Handle date change
   const onDateChanged = useCallback((date) => {
     setCurrentDate(date);
   }, []);
+
+  // Handle marking a plant as watered
+  const handleMarkWatered = useCallback(() => {
+    if (!selectedItem) return;
+
+    // Create a copy of the items
+    const newItems = {...items};
+
+    // Remove the selected item from today's list
+    if (newItems[selectedItem.date]) {
+      newItems[selectedItem.date] = newItems[selectedItem.date].filter(
+        item => !(item.name === selectedItem.name && item.time === selectedItem.time)
+      );
+
+      // If the date has no more items, remove the date entry
+      if (newItems[selectedItem.date].length === 0) {
+        delete newItems[selectedItem.date];
+      }
+
+      // Update the items state
+      setItems(newItems);
+    }
+
+    // Close the modal
+    setModalVisible(false);
+    setSelectedItem(null);
+  }, [selectedItem, items]);
+
+  // Handle postponing watering by 1 day
+  const handlePostponeWatering = useCallback(() => {
+    if (!selectedItem) return;
+
+    // Create a copy of the items
+    const newItems = {...items};
+
+    // Parse the date string to ensure it's interpreted in the local timezone
+    const [year, month, day] = selectedItem.date.split('-').map(num => parseInt(num, 10));
+    // Note: month is 0-indexed in JavaScript Date
+    const currentItemDate = new Date(year, month - 1, day);
+
+    // Add 1 day
+    currentItemDate.setDate(currentItemDate.getDate() + 1);
+    const newDateString = CalendarUtils.getCalendarDateString(currentItemDate);
+
+    // Remove the selected item from the current date
+    if (newItems[selectedItem.date]) {
+      newItems[selectedItem.date] = newItems[selectedItem.date].filter(
+        item => !(item.name === selectedItem.name && item.time === selectedItem.time)
+      );
+
+      // If the date has no more items, remove the date entry
+      if (newItems[selectedItem.date].length === 0) {
+        delete newItems[selectedItem.date];
+      }
+    }
+
+    // Add the item to the new date - ensure the new date entry exists
+    if (!newItems[newDateString]) {
+      newItems[newDateString] = [];
+    }
+
+    // Add the item to the new date
+    newItems[newDateString].push({
+      name: selectedItem.name,
+      time: selectedItem.time
+    });
+
+    // Parse the selected item date for proper comparison
+    const [selYear, selMonth, selDay] = selectedItem.date.split('-').map(num => parseInt(num, 10));
+    const selectedItemDateObj = new Date(selYear, selMonth - 1, selDay);
+
+    // Find and update all future watering events for the same plant
+    // Store dates to process to avoid modification during iteration
+    const datesToProcess = Object.keys(newItems);
+
+    // Process each date
+    datesToProcess.forEach(date => {
+      // Skip the new date we just created to avoid processing it twice
+      if (date === newDateString) return;
+
+      // Parse the current date string for proper comparison
+      const [currYear, currMonth, currDay] = date.split('-').map(num => parseInt(num, 10));
+      const currentDateObj = new Date(currYear, currMonth - 1, currDay);
+
+      // Compare Date objects instead of strings
+      if (currentDateObj > selectedItemDateObj) {
+        const itemsToUpdate = [];
+
+        // First identify all items that need to be updated
+        newItems[date].forEach((item, index) => {
+          if (item.name === selectedItem.name) {
+            // Calculate the new date for this future event (always +1 day)
+            // Parse the date string to ensure it's interpreted in the local timezone
+            const [futureYear, futureMonth, futureDay] = date.split('-').map(num => parseInt(num, 10));
+            // Note: month is 0-indexed in JavaScript Date
+            const futureDate = new Date(futureYear, futureMonth - 1, futureDay);
+            futureDate.setDate(futureDate.getDate() + 1);
+            const futureDateString = CalendarUtils.getCalendarDateString(futureDate);
+
+            itemsToUpdate.push({
+              index,
+              newDate: futureDateString,
+              item: {
+                name: item.name,
+                time: item.time
+              }
+            });
+          }
+        });
+
+        // Sort in reverse order to avoid index shifting issues
+        itemsToUpdate.sort((a, b) => b.index - a.index);
+
+        // Now update the items
+        itemsToUpdate.forEach(updateInfo => {
+          // Remove from current date
+          newItems[date].splice(updateInfo.index, 1);
+
+          // If the date has no more items, remove the date entry
+          if (newItems[date].length === 0) {
+            delete newItems[date];
+          }
+
+          // Add to new date - ensure the new date entry exists
+          if (!newItems[updateInfo.newDate]) {
+            newItems[updateInfo.newDate] = [];
+          }
+
+          newItems[updateInfo.newDate].push(updateInfo.item);
+        });
+      }
+    });
+
+    // Force a re-render by creating a new object
+    const updatedItems = {...newItems};
+
+    // Update the items state
+    setItems(updatedItems);
+
+    // Close the modal
+    setModalVisible(false);
+    setSelectedItem(null);
+  }, [selectedItem, items]);
 
   const formatTime = (timeString : string) => {
     if (!timeString) return '';
@@ -263,11 +425,29 @@ const TabThree = () => {
     return `${formattedHour}:${formattedMinutes} ${ampm}`;
   };
 
+
+  // Check if an item is from today
+  const isToday = (date) => {
+    return date === today;
+  };
+
   return (
     <ImageBackground
         source={require('../../assets/images/background.png')}
         resizeMode="cover"
         style={styles.background}>
+
+      {/* Watering Options Modal */}
+      <WateringOptionsModal
+        visible={modalVisible}
+        selectedItem={selectedItem}
+        onClose={() => {
+          setModalVisible(false);
+          setSelectedItem(null);
+        }}
+        onMarkWatered={handleMarkWatered}
+        onPostponeWatering={handlePostponeWatering}
+      />
       <SafeAreaView style={styles.container}>
         {expandedPlant ? (
           // Show expanded care card when a plant is selected
@@ -314,7 +494,7 @@ const TabThree = () => {
               }
             />
             <AgendaList
-              sections={Object.keys(items).map(date => ({
+              sections={Object.keys(items).sort().map(date => ({
                 title: date,
                 data: items[date].map(item => ({
                   ...item,
@@ -344,6 +524,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
     flexDirection: 'row',
+    alignItems: 'center',
   },
   itemTimeContainer: {
     width: 80,
@@ -358,6 +539,10 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 16,
     fontWeight: '500',
+  },
+  waterIconContainer: {
+    padding: 10,
+    marginLeft: 10,
   },
   section: {
     backgroundColor: 'transparent',

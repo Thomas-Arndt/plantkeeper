@@ -281,7 +281,7 @@ const TabOne = () => {
         style={styles.background}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.headerContainer}>
-          <Text style={styles.header}>Jennifer's Garden</Text>
+          <Text style={styles.header}>Garden A(i)ssistant</Text>
         </View>
         {expandedPlant ? (
           // Show expanded card when a plant is selected
