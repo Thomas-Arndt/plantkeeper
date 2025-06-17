@@ -5,11 +5,13 @@ import {
   ExpandableCalendar,
   AgendaList,
   CalendarUtils,
-  LocaleConfig
+  LocaleConfig,
 } from 'react-native-calendars';
-import {useNavigation, useFocusEffect} from "@react-navigation/native";
-import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {faChevronLeft, faChevronRight, faWater} from "@fortawesome/free-solid-svg-icons";
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
+import {selectAllPlants, selectPlantByName} from '../../state/slices/PlantsSlice';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faChevronLeft, faChevronRight, faDroplet} from '@fortawesome/free-solid-svg-icons';
 import ExpandedCareCard from '../../components/ExpandedCareCard';
 import WateringOptionsModal from '../../components/WateringOptionsModal';
 
@@ -38,165 +40,8 @@ const TabThree = () => {
     }, [expandedPlant])
   );
 
-  // List of Colorado native plants - same as in TabOne
-  const plants = [
-    {
-      id: '1',
-      name: 'Colorado Blue Columbine',
-      description: 'The state flower of Colorado',
-      detailedDescription: 'The Colorado Blue Columbine (Aquilegia coerulea) is the official state flower of Colorado. It\'s a beautiful perennial with distinctive blue and white flowers. The plant typically grows to about 20 inches tall and blooms from late spring to early summer. It prefers partial shade and well-drained soil.',
-      water: 'Moderate',
-      light: 'Partial shade',
-      soil: 'Well-drained, rich in organic matter',
-      bloomTime: 'Late spring to early summer',
-      height: '15-20 inches',
-      spacing: '12-18 inches',
-      maintenance: 'Low to moderate'
-    },
-    {
-      id: '2',
-      name: 'Rocky Mountain Juniper',
-      description: 'Evergreen tree native to Colorado',
-      detailedDescription: 'The Rocky Mountain Juniper (Juniperus scopulorum) is a hardy evergreen tree native to the Rocky Mountain region. It can grow up to 30-40 feet tall and has a distinctive conical shape. The foliage is blue-green and the tree produces small, blue, berry-like cones.',
-      water: 'Low',
-      light: 'Full sun',
-      soil: 'Well-drained, tolerates poor soils',
-      bloomTime: 'N/A (Evergreen)',
-      height: '30-40 feet',
-      spacing: '15-20 feet',
-      maintenance: 'Low'
-    },
-    {
-      id: '3',
-      name: 'Ponderosa Pine',
-      description: 'Common in Colorado forests',
-      detailedDescription: 'The Ponderosa Pine (Pinus ponderosa) is one of the most common trees in Colorado forests. It can grow to impressive heights of 60-100 feet. The bark is distinctive, with large plates that smell like vanilla or butterscotch when warm. The needles grow in bundles of three.',
-      water: 'Low to moderate',
-      light: 'Full sun',
-      soil: 'Well-drained, adaptable',
-      bloomTime: 'N/A (Evergreen)',
-      height: '60-100 feet',
-      spacing: '20-25 feet',
-      maintenance: 'Low'
-    },
-    {
-      id: '4',
-      name: 'Pasque Flower',
-      description: 'Early spring bloomer',
-      detailedDescription: 'The Pasque Flower (Pulsatilla patens) is one of the earliest blooming wildflowers in Colorado. It produces lavender to purple cup-shaped flowers with yellow centers. The plant is covered with silky hairs that help protect it from cold spring temperatures.',
-      water: 'Low to moderate',
-      light: 'Full sun to partial shade',
-      soil: 'Well-drained, sandy or rocky',
-      bloomTime: 'Early spring',
-      height: '6-8 inches',
-      spacing: '8-12 inches',
-      maintenance: 'Low'
-    },
-    {
-      id: '5',
-      name: 'Blanket Flower',
-      description: 'Drought-tolerant perennial',
-      detailedDescription: 'The Blanket Flower (Gaillardia aristata) is a colorful, drought-tolerant perennial native to Colorado. It produces daisy-like flowers with red centers and yellow tips. The plant blooms throughout the summer and attracts butterflies and other pollinators.',
-      water: 'Low',
-      light: 'Full sun',
-      soil: 'Well-drained, tolerates poor soils',
-      bloomTime: 'Summer to fall',
-      height: '12-18 inches',
-      spacing: '12-18 inches',
-      maintenance: 'Low'
-    },
-    {
-      id: '6',
-      name: 'Prairie Zinnia',
-      description: 'Low-growing wildflower',
-      detailedDescription: 'The Prairie Zinnia (Zinnia grandiflora) is a low-growing wildflower native to Colorado. It produces small, yellow, daisy-like flowers throughout the summer. The plant forms a mat-like ground cover and is extremely drought-tolerant.',
-      water: 'Very low',
-      light: 'Full sun',
-      soil: 'Well-drained, sandy or rocky',
-      bloomTime: 'Summer',
-      height: '4-8 inches',
-      spacing: '12-18 inches',
-      maintenance: 'Very low'
-    },
-    {
-      id: '7',
-      name: 'Sulphur Flower',
-      description: 'Drought-tolerant groundcover',
-      detailedDescription: 'The Sulphur Flower (Eriogonum umbellatum) is a drought-tolerant groundcover native to Colorado. It produces clusters of bright yellow flowers on short stems. The plant forms a low mat and is excellent for rock gardens and xeriscaping.',
-      water: 'Very low',
-      light: 'Full sun',
-      soil: 'Well-drained, sandy or rocky',
-      bloomTime: 'Late spring to summer',
-      height: '4-10 inches',
-      spacing: '12-18 inches',
-      maintenance: 'Very low'
-    },
-    {
-      id: '8',
-      name: 'Rocky Mountain Penstemon',
-      description: 'Vibrant blue-purple flowers',
-      detailedDescription: 'The Rocky Mountain Penstemon (Penstemon strictus) is a stunning wildflower native to Colorado. It produces spikes of vibrant blue-purple tubular flowers that attract hummingbirds and bees. The plant is drought-tolerant once established.',
-      water: 'Low',
-      light: 'Full sun to partial shade',
-      soil: 'Well-drained',
-      bloomTime: 'Late spring to early summer',
-      height: '18-36 inches',
-      spacing: '12-18 inches',
-      maintenance: 'Low'
-    },
-    {
-      id: '9',
-      name: 'Chocolate Flower',
-      description: 'Smells like chocolate in the morning',
-      detailedDescription: 'The Chocolate Flower (Berlandiera lyrata) is a unique wildflower native to Colorado. It produces yellow daisy-like flowers that emit a chocolate scent, especially in the morning. The plant is drought-tolerant and attracts butterflies.',
-      water: 'Low',
-      light: 'Full sun',
-      soil: 'Well-drained',
-      bloomTime: 'Summer to fall',
-      height: '12-18 inches',
-      spacing: '12-18 inches',
-      maintenance: 'Low'
-    },
-    {
-      id: '10',
-      name: 'Scarlet Globemallow',
-      description: 'Orange-red flowers on silver foliage',
-      detailedDescription: 'The Scarlet Globemallow (Sphaeralcea coccinea) is a drought-tolerant wildflower native to Colorado. It produces bright orange-red flowers on silver-gray foliage. The plant is extremely hardy and can thrive in harsh conditions.',
-      water: 'Very low',
-      light: 'Full sun',
-      soil: 'Well-drained, tolerates poor soils',
-      bloomTime: 'Late spring to summer',
-      height: '6-12 inches',
-      spacing: '12-18 inches',
-      maintenance: 'Very low'
-    },
-    {
-      id: '11',
-      name: 'Prairie Coneflower',
-      description: 'Yellow daisy-like flowers',
-      detailedDescription: 'The Prairie Coneflower (Ratibida columnifera) is a wildflower native to Colorado. It produces distinctive yellow daisy-like flowers with drooping petals and elongated central cones. The plant is drought-tolerant and attracts butterflies and birds.',
-      water: 'Low',
-      light: 'Full sun',
-      soil: 'Well-drained',
-      bloomTime: 'Summer to fall',
-      height: '18-30 inches',
-      spacing: '12-18 inches',
-      maintenance: 'Low'
-    },
-    {
-      id: '12',
-      name: 'Blue Grama Grass',
-      description: 'Native prairie grass',
-      detailedDescription: 'Blue Grama Grass (Bouteloua gracilis) is a native prairie grass of Colorado. It forms dense clumps and produces distinctive seed heads that resemble eyelashes. The grass is extremely drought-tolerant and provides important habitat for wildlife.',
-      water: 'Very low',
-      light: 'Full sun',
-      soil: 'Well-drained, tolerates poor soils',
-      bloomTime: 'Summer',
-      height: '12-18 inches',
-      spacing: '12-18 inches',
-      maintenance: 'Very low'
-    },
-  ];
+  // Get all plants from Redux store
+  const plants = useSelector(selectAllPlants);
 
   // Function to find plant by name
   const findPlantByName = (name) => {
@@ -204,14 +49,14 @@ const TabThree = () => {
   };
   // Sample agenda items
   const [items, setItems] = useState({
-    '2025-06-13': [{ name: 'Colorado Blue Columbine', time: '10:00 AM' }],
-    '2025-06-14': [{ name: 'Prairie Zinnia', time: '09:00:00' }, { name: 'Blanket Flower', time: '14:00:00' }, { name: 'Sulphur Flower', time: '17:00:00' }],
-    '2025-06-15': [{ name: 'Prairie Coneflower', time: '09:00:00' }, { name: 'Colorado Blue Columbine', time: '14:00:00' }],
-    '2025-06-16': [{ name: 'Pasque Flower', time: '09:00:00' }, { name: 'Sulphur Flower', time: '14:00:00' }],
-    '2025-06-17': [{ name: 'Colorado Blue Columbine', time: '09:00:00' }, { name: 'Blue Grama Grass', time: '14:00:00' }],
-    '2025-06-19': [{ name: 'Prairie Zinnia', time: '09:00:00' }, { name: 'Blanket Flower', time: '14:00:00' }],
-    '2025-06-20': [{ name: 'Prairie Coneflower', time: '09:00:00' }, { name: 'Colorado Blue Columbine', time: '14:00:00' }],
-    '2025-06-21': [{ name: 'Pasque Flower', time: '09:00:00' }, { name: 'Sulphur Flower', time: '14:00:00' }],
+    '2025-06-13': [{ 'id': 1, name: 'Colorado Blue Columbine', time: '10:00 AM' }],
+    '2025-06-14': [{ 'id': 2, name: 'Prairie Zinnia', time: '09:00:00' }, { 'id': 3, name: 'Blanket Flower', time: '14:00:00' }, { 'id': 4, name: 'Sulphur Flower', time: '17:00:00' }],
+    '2025-06-15': [{ 'id': 5, name: 'Prairie Coneflower', time: '09:00:00' }, { 'id': 6, name: 'Colorado Blue Columbine', time: '14:00:00' }],
+    '2025-06-16': [{ 'id': 7, name: 'Pasque Flower', time: '09:00:00' }, { 'id': 8, name: 'Sulphur Flower', time: '14:00:00' }],
+    '2025-06-17': [{ 'id': 9, name: 'Colorado Blue Columbine', time: '09:00:00' }, { 'id': 10, name: 'Blue Grama Grass', time: '14:00:00' }],
+    '2025-06-18': [{ 'id': 11, name: 'Prairie Zinnia', time: '09:00:00' }, { 'id': 12, name: 'Blanket Flower', time: '14:00:00' }],
+    '2025-06-20': [{ 'id': 13, name: 'Prairie Coneflower', time: '09:00:00' }, { 'id': 14, name: 'Colorado Blue Columbine', time: '14:00:00' }],
+    '2025-06-21': [{ 'id': 15, name: 'Pasque Flower', time: '09:00:00' }, { 'id': 16, name: 'Sulphur Flower', time: '14:00:00' }],
   });
 
   // Get dates with events for marking
@@ -253,12 +98,12 @@ const TabThree = () => {
               setModalVisible(true);
             }}
           >
-            <FontAwesomeIcon icon={faWater} size={20} color="#2196F3" />
+            <FontAwesomeIcon icon={faDroplet} size={30} color="#2196F3" />
           </TouchableOpacity>
         )}
       </TouchableOpacity>
     );
-  }, [findPlantByName, isToday, today]);
+  }, [plants, isToday, today]);
 
   // Handle date change
   const onDateChanged = useCallback((date) => {
@@ -267,7 +112,7 @@ const TabThree = () => {
 
   // Handle marking a plant as watered
   const handleMarkWatered = useCallback(() => {
-    if (!selectedItem) return;
+    if (!selectedItem) {return;}
 
     // Create a copy of the items
     const newItems = {...items};
@@ -294,107 +139,129 @@ const TabThree = () => {
 
   // Handle postponing watering by 1 day
   const handlePostponeWatering = useCallback(() => {
-    if (!selectedItem) return;
+    if (!selectedItem) {return;}
 
     // Create a copy of the items
     const newItems = {...items};
 
     // Parse the date string to ensure it's interpreted in the local timezone
     const [year, month, day] = selectedItem.date.split('-').map(num => parseInt(num, 10));
-    // Note: month is 0-indexed in JavaScript Date
-    const currentItemDate = new Date(year, month - 1, day);
 
-    // Add 1 day
-    currentItemDate.setDate(currentItemDate.getDate() + 1);
-    const newDateString = CalendarUtils.getCalendarDateString(currentItemDate);
+    // Store the original date string for later comparison
+    const originalDateString = selectedItem.date;
 
-    // Remove the selected item from the current date
-    if (newItems[selectedItem.date]) {
-      newItems[selectedItem.date] = newItems[selectedItem.date].filter(
-        item => !(item.name === selectedItem.name && item.time === selectedItem.time)
-      );
+    // Create a new date string directly by incrementing the day
+    // This avoids any potential timezone issues
+    let nextDay = day + 1;
+    let nextMonth = month;
+    let nextYear = year;
 
-      // If the date has no more items, remove the date entry
-      if (newItems[selectedItem.date].length === 0) {
-        delete newItems[selectedItem.date];
+    // Handle month/year rollover
+    const daysInMonth = new Date(year, month, 0).getDate();
+    if (nextDay > daysInMonth) {
+      nextDay = 1;
+      nextMonth += 1;
+      if (nextMonth > 12) {
+        nextMonth = 1;
+        nextYear += 1;
       }
     }
 
-    // Add the item to the new date - ensure the new date entry exists
-    if (!newItems[newDateString]) {
-      newItems[newDateString] = [];
-    }
+    // Format the date string manually
+    const newDateString = `${nextYear}-${String(nextMonth).padStart(2, '0')}-${String(nextDay).padStart(2, '0')}`;
 
-    // Add the item to the new date
-    newItems[newDateString].push({
-      name: selectedItem.name,
-      time: selectedItem.time
-    });
-
-    // Parse the selected item date for proper comparison
+    // Create a Date object for the original selected item date
     const [selYear, selMonth, selDay] = selectedItem.date.split('-').map(num => parseInt(num, 10));
     const selectedItemDateObj = new Date(selYear, selMonth - 1, selDay);
 
-    // Find and update all future watering events for the same plant
+    // Process all dates including the selected item's date
     // Store dates to process to avoid modification during iteration
     const datesToProcess = Object.keys(newItems);
 
+    // Sort dates in reverse order to process them from latest to earliest
+    // This helps avoid index shifting issues
+    datesToProcess.sort().reverse();
+
     // Process each date
     datesToProcess.forEach(date => {
-      // Skip the new date we just created to avoid processing it twice
-      if (date === newDateString) return;
-
       // Parse the current date string for proper comparison
       const [currYear, currMonth, currDay] = date.split('-').map(num => parseInt(num, 10));
       const currentDateObj = new Date(currYear, currMonth - 1, currDay);
 
-      // Compare Date objects instead of strings
-      if (currentDateObj > selectedItemDateObj) {
-        const itemsToUpdate = [];
+      const itemsToUpdate = [];
 
-        // First identify all items that need to be updated
-        newItems[date].forEach((item, index) => {
-          if (item.name === selectedItem.name) {
-            // Calculate the new date for this future event (always +1 day)
-            // Parse the date string to ensure it's interpreted in the local timezone
-            const [futureYear, futureMonth, futureDay] = date.split('-').map(num => parseInt(num, 10));
-            // Note: month is 0-indexed in JavaScript Date
-            const futureDate = new Date(futureYear, futureMonth - 1, futureDay);
-            futureDate.setDate(futureDate.getDate() + 1);
-            const futureDateString = CalendarUtils.getCalendarDateString(futureDate);
-
+      // First identify all items that need to be updated
+      newItems[date].forEach((item, index) => {
+        // For the selected item's date, only update the selected item
+        if (date === originalDateString) {
+          if (item.name === selectedItem.name && item.time === selectedItem.time) {
             itemsToUpdate.push({
               index,
-              newDate: futureDateString,
+              newDate: newDateString,
               item: {
                 name: item.name,
-                time: item.time
-              }
+                time: item.time,
+              },
             });
           }
-        });
+        }
+        // For future dates, update all items with the same name
+        else if (currentDateObj > selectedItemDateObj && item.name === selectedItem.name) {
+          // Calculate the new date for this future event (always +1 day)
+          // Parse the date string to ensure it's interpreted in the local timezone
+          const [futureYear, futureMonth, futureDay] = date.split('-').map(num => parseInt(num, 10));
 
-        // Sort in reverse order to avoid index shifting issues
-        itemsToUpdate.sort((a, b) => b.index - a.index);
+          // Create a new date string directly by incrementing the day
+          // This avoids any potential timezone issues
+          let nextDay = futureDay + 1;
+          let nextMonth = futureMonth;
+          let nextYear = futureYear;
 
-        // Now update the items
-        itemsToUpdate.forEach(updateInfo => {
-          // Remove from current date
-          newItems[date].splice(updateInfo.index, 1);
-
-          // If the date has no more items, remove the date entry
-          if (newItems[date].length === 0) {
-            delete newItems[date];
+          // Handle month/year rollover
+          const daysInMonth = new Date(futureYear, futureMonth, 0).getDate();
+          if (nextDay > daysInMonth) {
+            nextDay = 1;
+            nextMonth += 1;
+            if (nextMonth > 12) {
+              nextMonth = 1;
+              nextYear += 1;
+            }
           }
 
-          // Add to new date - ensure the new date entry exists
-          if (!newItems[updateInfo.newDate]) {
-            newItems[updateInfo.newDate] = [];
-          }
+          // Format the date string manually
+          const futureDateString = `${nextYear}-${String(nextMonth).padStart(2, '0')}-${String(nextDay).padStart(2, '0')}`;
 
-          newItems[updateInfo.newDate].push(updateInfo.item);
-        });
-      }
+          itemsToUpdate.push({
+            index,
+            newDate: futureDateString,
+            item: {
+              name: item.name,
+              time: item.time,
+            },
+          });
+        }
+      });
+
+      // Sort in reverse order to avoid index shifting issues
+      itemsToUpdate.sort((a, b) => b.index - a.index);
+
+      // Now update the items
+      itemsToUpdate.forEach(updateInfo => {
+        // Remove from current date
+        newItems[date].splice(updateInfo.index, 1);
+
+        // If the date has no more items, remove the date entry
+        if (newItems[date].length === 0) {
+          delete newItems[date];
+        }
+
+        // Add to new date - ensure the new date entry exists
+        if (!newItems[updateInfo.newDate]) {
+          newItems[updateInfo.newDate] = [];
+        }
+
+        newItems[updateInfo.newDate].push(updateInfo.item);
+      });
     });
 
     // Force a re-render by creating a new object
@@ -409,14 +276,14 @@ const TabThree = () => {
   }, [selectedItem, items]);
 
   const formatTime = (timeString : string) => {
-    if (!timeString) return '';
+    if (!timeString) {return '';}
 
     const [hoursStr, minutesStr] = timeString.split(':');
 
     const hours = parseInt(hoursStr, 10);
     const minutes = parseInt(minutesStr, 10);
 
-    if (isNaN(hours) || isNaN(minutes)) return '';
+    if (isNaN(hours) || isNaN(minutes)) {return '';}
 
     const ampm = hours >= 12 ? 'PM' : 'AM';
     const formattedHour = hours % 12 || 12; // convert 0 to 12
@@ -499,10 +366,10 @@ const TabThree = () => {
                 data: items[date].map(item => ({
                   ...item,
                   date,
-                }))
+                })),
               }))}
               renderItem={renderItem}
-              keyExtractor={item => item.date + '-' + item.name + '-' + item.time}
+              keyExtractor={item => item.id}
               sectionStyle={styles.section}
             />
           </CalendarProvider>
@@ -541,8 +408,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   waterIconContainer: {
-    padding: 10,
-    marginLeft: 10,
+    paddingHorizontal: 10,
   },
   section: {
     backgroundColor: 'transparent',

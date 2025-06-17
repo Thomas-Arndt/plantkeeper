@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faWater, faArrowRight, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faDroplet, faArrowRight, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { CalendarUtils } from 'react-native-calendars';
 
 interface WateringOptionsModalProps {
@@ -29,7 +29,7 @@ const WateringOptionsModal: React.FC<WateringOptionsModalProps> = ({
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Watering Options</Text>
+            <Text style={styles.modalTitle}>Watered today?</Text>
             <TouchableOpacity
               style={styles.closeButton}
               onPress={onClose}
@@ -47,7 +47,7 @@ const WateringOptionsModal: React.FC<WateringOptionsModalProps> = ({
               style={[styles.iconButton, styles.buttonWatered]}
               onPress={onMarkWatered}
             >
-              <FontAwesomeIcon icon={faWater} size={40} color="white" />
+              <FontAwesomeIcon icon={faDroplet} size={40} color="white" />
             </TouchableOpacity>
 
             <TouchableOpacity
